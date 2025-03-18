@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Enxoval</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3675f3;
+        }
+        h2 {
+            color: #3675f3;
+            border-bottom: 2px solid #3675f3;
+            padding-bottom: 5px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        li.completed {
+            text-decoration: line-through;
+            background: #d4edda;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+        a:hover {
+            color: #3675f3;
+        }
+        .link-input {
+            display: none;
+            margin-left: 10px;
+        }
+        .show-input {
+            display: flex;
+            align-items: center;
+        }
+        .add-link-btn {
+            background: none;
+            border: none;
+            color: #3675f3;
+            cursor: pointer;
+        }
+        .add-link-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Enxoval de Casa Nova</h1>
+        <div id="lista"></div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const lista = {
+                "Cozinha": ["Geladeira", "CookTop", "Lava-Louças", "Depurador", "Filtro de água", "Liquidificador", "Espremedor de laranja", "Batedeira", "Grill / Sanduicheira", "AirFryer / Forninho", "Chaleira", "Armário", "Bancada e prateleiras", "Banquetas", "Kit de Panelas", "Pratos rasos", "Pratos fundos", "Copos", "Taças", "Xícaras", "Taças de sobremesa", "Talheres", "Vasilhas e Bowls", "Panos de prato", "Multiprocessador", "Kit Facas", "Kit utensílios", "Tábua de carne", "Garrafa de café", "Potes para temperos", "Organizadores de compras", "Organizadores de louças", "Organizadores de geladeira", "Balança", "Centrífuga de alimentos", "Jogo de Assadeiras", "Peneira", "Jarras de suco", "Ralador", "Tapetes"],
+                "Área de Serviço": ["Lava e Seca", "Ferro de passar a vapor", "Aspirador", "Tanque", "Torneira", "Vassoura", "Rodo", "Pá", "Lixeira", "Panos de chão", "Balde", "Bacia", "Varal", "Tábua de passar", "Pregadores", "Organizadores de produtos de limpeza"],
+                "Sala": ["Sofá", "Rack", "Mesa", "Cadeiras", "Televisão", "Receptor", "Som / SoundBar", "Tapete", "Almofadas", "Mantas", "Decoração de rack", "Quadros de parede", "Cortina", "Toalhas de mesa", "Capas de cadeira", "Jogos americanos", "Centro de mesa"],
+                "Quarto": ["Cama box baú Queen", "Guarda roupa 3m", "Painel de TV com penteadeira", "Mesas de cabeceira", "Puff da penteadeira", "Protetor de colchão impermeável", "Pillow Top", "Capa de elástico", "Jogo de lençol", "Colcha", "Manta / Peseira", "Travesseiros", "Almofadas", "Protetor de travesseiro impermeável", "Tapete", "Decoração", "Quadros de parede"],
+                "Banheiro": ["Cuba de sobrepor", "Torneira", "Espelho com luz indireta", "Nicho vertical no box", "Toalheiro aquecido", "Vaso sanitário monobloco", "Chuveiro elétrico", "Kits de toalhas rosto e corpo", "Kit de acessórios", "Conjunto de banheiro", "Saboneteira", "Lixeira", "Escova para bacia", "Tapetes", "Difusor de ambientes"]
+            };
+
+            const listaContainer = document.getElementById("lista");
+            const savedLinks = JSON.parse(localStorage.getItem('links')) || {};
+
+            Object.keys(lista).forEach(categoria => {
+                let section = document.createElement("div");
+                section.innerHTML = `<h2>${categoria}</h2>`;
+                let ul = document.createElement("ul");
+                lista[categoria].forEach(item => {
+                    let li = document.createElement("li");
+                    let itemLink = savedLinks[item] || '#';
+                    li.innerHTML = `
+                        <input type='checkbox'>
+                        <a href='${itemLink}' target='_blank'>${item}</a>
+                        <button class='add-link-btn'>+ Link</button>
+                        <div class='link-input'>
+                            <input type='text' class='input-url' placeholder='Adicione o link'>
+                            <button class='save-link-btn'>Salvar</button>
+                        </div>
+                    `;
+                    ul.appendChild(li);
+                });
+                section.appendChild(ul);
+                listaContainer.appendChild(section);
+            });
+
+            document.querySelectorAll('.add-link-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const linkInputDiv = this.nextElementSibling;
+                    if (linkInputDiv.classList.contains('show-input')) {
+                        linkInputDiv.classList.remove('show-input');
+                    } else {
+                        linkInputDiv.classList.add('show-input');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.save-link-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const inputUrl = this.previousElementSibling.value;
+                    if (inputUrl) {
+                        const link = this.closest('li').querySelector('a');
+                        link.href = inputUrl;
+                        link.target = '_blank';
+                        link.innerHTML = `${link.innerHTML} <small>(Link)</small>`;
+                        
+                        const itemName = link.textContent.replace(' <small>(Link)</small>', '');
+                        savedLinks[itemName] = inputUrl;
+                        localStorage.setItem('links', JSON.stringify(savedLinks));
+
+                        this.closest('.link-input').classList.remove('show-input');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
